@@ -1,5 +1,6 @@
 package com.qenetech.photogallery;
 
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.qenetech.photogallery.backend.FlickrFetchr;
@@ -81,15 +83,15 @@ public class PhotoGalleryFragment extends Fragment {
     }
     private class PhotoHolder extends RecyclerView.ViewHolder {
 
-        private TextView mTextView;
+        private ImageView mImageView;
 
         public PhotoHolder(View itemView) {
             super(itemView);
-            mTextView = (TextView) itemView;
+            mImageView = (ImageView) itemView.findViewById(R.id.fragment_photo_gallery_image_view);
         }
 
-        public void bindPhoto (GalleryItem item){
-            mTextView.setText(item.getCaption());
+        public void bindPhoto (Drawable drawable){
+            mImageView.setImageDrawable(drawable);
         }
     }
 
@@ -103,13 +105,16 @@ public class PhotoGalleryFragment extends Fragment {
 
         @Override
         public PhotoHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new PhotoHolder(new TextView(getActivity()));
+            LayoutInflater inflater = LayoutInflater.from(getActivity());
+            View v = inflater.inflate(R.layout.gallery_item, parent, false);
+            return new PhotoHolder(v);
         }
 
         @Override
         public void onBindViewHolder(PhotoHolder holder, int position) {
             GalleryItem item = mGalleryItems.get(position);
-            holder.bindPhoto(item);
+            Drawable placeHolder = getResources().getDrawable(R.drawable.background_material_red);
+            holder.bindPhoto(placeHolder);
         }
 
         @Override
