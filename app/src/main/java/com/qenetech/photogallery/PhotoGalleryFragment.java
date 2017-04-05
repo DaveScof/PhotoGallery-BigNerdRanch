@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
 import com.qenetech.photogallery.backend.FlickrFetchr;
@@ -30,6 +31,10 @@ public class PhotoGalleryFragment extends Fragment {
     private List<GalleryItem> mItems = new ArrayList<>();
 
     private RecyclerView mPhotoRecyclerView;
+    private int mGalleryPage;
+    private int lastPosition;
+    private FlickrFetchr mFlickrFetchr = new FlickrFetchr();
+    private boolean mIsLoading = false;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -44,8 +49,25 @@ public class PhotoGalleryFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_photo_gallery, container, false);
 
         mPhotoRecyclerView = (RecyclerView) view.findViewById(R.id.frag_photo_gallery_recyclerView);
-
         mPhotoRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
+
+        ViewTreeObserver observer = mPhotoRecyclerView.getViewTreeObserver();
+        mPhotoRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                if (dy > 0 && !mIsLoading) {
+                    GridLayoutManager manager = (GridLayoutManager) mPhotoRecyclerView.getLayoutManager();
+                    int visibleItemCount = manager.getChildCount();
+                    int totalItemCount = manager.getItemCount();
+                    int pastVisibleItems = manager.findFirstVisibleItemPosition();
+                    if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
+                        lastPosition = manager.findLastVisibleItemPosition() - visibleItemCount + 2;
+                        mGalleryPage++;
+                        new FetchItemsTask().execute();
+                    }
+                }
+            }
+        });
 
         return view;
     }
@@ -54,6 +76,7 @@ public class PhotoGalleryFragment extends Fragment {
         if (isAdded())
         {
             mPhotoRecyclerView.setAdapter(new PhotoAdapter(mItems));
+            mPhotoRecyclerView.getLayoutManager().scrollToPosition(lastPosition);
         }
     }
     private class PhotoHolder extends RecyclerView.ViewHolder {
@@ -98,14 +121,20 @@ public class PhotoGalleryFragment extends Fragment {
     private class FetchItemsTask extends AsyncTask<Void, Void, List<GalleryItem>>{
 
         @Override
+        protected void onPreExecute() {
+            mIsLoading =  true;
+        }
+
+        @Override
         protected List<GalleryItem> doInBackground(Void... voids) {
-            return new FlickrFetchr().fetchItems();
+            return mFlickrFetchr.fetchItems(mGalleryPage);
         }
 
         @Override
         protected void onPostExecute(List<GalleryItem> galleryItems) {
             mItems = galleryItems;
             setupAdapter();
+            mIsLoading =  false;
         }
     }
 }
