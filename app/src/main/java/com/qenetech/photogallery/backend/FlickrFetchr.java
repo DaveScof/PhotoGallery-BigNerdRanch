@@ -55,17 +55,19 @@ public class FlickrFetchr {
             String url = Uri.parse("https://api.flickr.com/services/rest/")
                     .buildUpon()
                     .appendQueryParameter("method", "flickr.photos.getRecent")
+                    .appendQueryParameter("api_key", API_KEY)
                     .appendQueryParameter("format", "json")
                     .appendQueryParameter("nojsoncallback", "1")
                     .appendQueryParameter("extras", "url_s")
                     .build().toString();
             String jsonString = getUrlString(url);
-            Log.i(TAG, jsonString);
-
+            Log.i(TAG, "Received JSON: " + jsonString);
         } catch (IOException e) {
             Log.e(TAG, "Failed to fetch items", e);
         }
     }
+
+    
 
     public String getUrlString (String urlSpec) throws IOException{
         return new String(getUrlBytes(urlSpec));
