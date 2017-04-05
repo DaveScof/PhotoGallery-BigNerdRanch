@@ -28,6 +28,7 @@ public class PhotoGalleryFragment extends Fragment {
     public static PhotoGalleryFragment newInstance(){
         return new PhotoGalleryFragment();
     }
+    private List<GalleryItem> mItems;
 
     private RecyclerView mPhotoRecyclerView;
 
@@ -53,7 +54,7 @@ public class PhotoGalleryFragment extends Fragment {
     private void setAdapter (){
         if (isAdded())
         {
-            
+            mPhotoRecyclerView.setAdapter(new PhotoAdapter(mItems));
         }
     }
     private class PhotoHolder extends RecyclerView.ViewHolder {
