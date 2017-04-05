@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +14,7 @@ import android.widget.TextView;
 import com.qenetech.photogallery.backend.FlickrFetchr;
 import com.qenetech.photogallery.model.GalleryItem;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,7 +27,7 @@ public class PhotoGalleryFragment extends Fragment {
     public static PhotoGalleryFragment newInstance(){
         return new PhotoGalleryFragment();
     }
-    private List<GalleryItem> mItems;
+    private List<GalleryItem> mItems = new ArrayList<>();
 
     private RecyclerView mPhotoRecyclerView;
 
@@ -51,7 +50,7 @@ public class PhotoGalleryFragment extends Fragment {
         return view;
     }
 
-    private void setAdapter (){
+    private void setupAdapter(){
         if (isAdded())
         {
             mPhotoRecyclerView.setAdapter(new PhotoAdapter(mItems));
@@ -96,12 +95,17 @@ public class PhotoGalleryFragment extends Fragment {
         }
     }
 
-    private class FetchItemsTask extends AsyncTask<Void, Void, Void>{
+    private class FetchItemsTask extends AsyncTask<Void, Void, List<GalleryItem>>{
 
         @Override
-        protected Void doInBackground(Void... voids) {
-            new FlickrFetchr().fetchItems();
-            return null;
+        protected List<GalleryItem> doInBackground(Void... voids) {
+            return new FlickrFetchr().fetchItems();
+        }
+
+        @Override
+        protected void onPostExecute(List<GalleryItem> galleryItems) {
+            mItems = galleryItems;
+            setupAdapter();
         }
     }
 }
