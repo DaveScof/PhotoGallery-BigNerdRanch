@@ -3,6 +3,9 @@ package com.qenetech.photogallery.backend;
 import android.net.Uri;
 import android.util.Log;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -62,12 +65,15 @@ public class FlickrFetchr {
                     .build().toString();
             String jsonString = getUrlString(url);
             Log.i(TAG, "Received JSON: " + jsonString);
+            JSONObject jsonObject = new JSONObject(jsonString);
         } catch (IOException e) {
             Log.e(TAG, "Failed to fetch items", e);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 
-    
+
 
     public String getUrlString (String urlSpec) throws IOException{
         return new String(getUrlBytes(urlSpec));
