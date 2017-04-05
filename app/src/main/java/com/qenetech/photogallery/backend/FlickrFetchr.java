@@ -28,7 +28,7 @@ public class FlickrFetchr {
     public static final String TAG = "FlickrFetchr";
     public static final String API_KEY = "9064993332fbc73e2a7588f7d74746fd";
 
-    List<GalleryItem> mGalleryItems = new ArrayList<>();
+
 
 
     public byte[] getUrlBytes (String urlSpec) throws IOException {
@@ -60,7 +60,9 @@ public class FlickrFetchr {
         }
     }
 
-    public void fetchItems (){
+    public List<GalleryItem> fetchItems (){
+        List<GalleryItem> galleryItems = new ArrayList<>();
+
         try {
             String url = Uri.parse("https://api.flickr.com/services/rest/")
                     .buildUpon()
@@ -74,12 +76,13 @@ public class FlickrFetchr {
             Log.i(TAG, "Received JSON: " + jsonString);
             JSONObject jsonObject = new JSONObject(jsonString);
 
-            parseGalleryItems(mGalleryItems, jsonObject);
+            parseGalleryItems(galleryItems, jsonObject);
         } catch (IOException e) {
             Log.e(TAG, "Failed to fetch items", e);
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        return galleryItems;
     }
 
     private void parseGalleryItems (List<GalleryItem> items, JSONObject jsonObject) throws JSONException {
