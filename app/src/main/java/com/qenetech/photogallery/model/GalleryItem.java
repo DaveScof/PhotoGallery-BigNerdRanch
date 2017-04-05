@@ -9,11 +9,6 @@ public class GalleryItem {
     private String mCaption;
     private String mUrl;
 
-    public GalleryItem (String caption)
-    {
-        mCaption = caption;
-    }
-
     public String getId() {
         return mId;
     }
@@ -36,5 +31,10 @@ public class GalleryItem {
 
     public void setUrl(String url) {
         mUrl = url;
+    }
+
+    @Override
+    public String toString() {
+        return mCaption;
     }
 }
