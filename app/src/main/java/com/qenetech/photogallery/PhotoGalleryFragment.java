@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import com.qenetech.photogallery.backend.FlickrFetchr;
 import com.qenetech.photogallery.backend.ThumbnailDownloader;
 import com.qenetech.photogallery.model.GalleryItem;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,13 +54,13 @@ public class PhotoGalleryFragment extends Fragment {
 
         Handler responseHandler = new Handler();
         mThumbnailDownloader = new ThumbnailDownloader<>(responseHandler);
-        mThumbnailDownloader.setThumbnailDownloadListener(new ThumbnailDownloader.ThumbnailDownloadListener<PhotoHolder>() {
-            @Override
-            public void onThumbnailDownloaded(PhotoHolder target, Bitmap thumbnail) {
-                Drawable drawable = new BitmapDrawable(getResources(), thumbnail);
-                target.bindPhoto(drawable);
-            }
-        });
+//        mThumbnailDownloader.setThumbnailDownloadListener(new ThumbnailDownloader.ThumbnailDownloadListener<PhotoHolder>() {
+//            @Override
+//            public void onThumbnailDownloaded(PhotoHolder target, Bitmap thumbnail) {
+//                Drawable drawable = new BitmapDrawable(getResources(), thumbnail);
+//                target.bindGalleryItem(drawable);
+//            }
+//        });
         mThumbnailDownloader.start();
         mThumbnailDownloader.getLooper();
         Log.i(TAG, "Background thread started");
@@ -130,8 +131,12 @@ public class PhotoGalleryFragment extends Fragment {
             mImageView = (ImageView) itemView.findViewById(R.id.fragment_photo_gallery_image_view);
         }
 
-        public void bindPhoto (Drawable drawable) {
-            mImageView.setImageDrawable(drawable);
+        public void bindGalleryItem(GalleryItem item) {
+//            mImageView.setImageDrawable(drawable);
+            Picasso.with(getActivity())
+                    .load(item.getUrl())
+                    .placeholder(R.drawable.background_material_red)
+                    .into(mImageView);
         }
 
     }
@@ -154,9 +159,10 @@ public class PhotoGalleryFragment extends Fragment {
         @Override
         public void onBindViewHolder(PhotoHolder holder, int position) {
             GalleryItem item = mGalleryItems.get(position);
-            Drawable placeHolder = getResources().getDrawable(R.drawable.background_material_red);
-            holder.bindPhoto(placeHolder);
-            mThumbnailDownloader.queueThumbnail(holder, item.getUrl());
+//            Drawable placeHolder = getResources().getDrawable(R.drawable.background_material_red);
+//            holder.bindGalleryItem(placeHolder);
+//            mThumbnailDownloader.queueThumbnail(holder, item.getUrl());
+            holder.bindGalleryItem(item);
         }
 
         @Override
