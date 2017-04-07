@@ -3,7 +3,6 @@ package com.qenetech.photogallery.backend;
 import android.net.Uri;
 import android.util.Log;
 
-import com.google.gson.Gson;
 import com.qenetech.photogallery.model.GalleryItem;
 
 import org.json.JSONArray;
@@ -13,9 +12,7 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,8 +23,19 @@ import java.util.List;
 
 public class FlickrFetchr {
 
-    public static final String TAG = "FlickrFetchr";
-    public static final String API_KEY = "9064993332fbc73e2a7588f7d74746fd";
+    private static final String TAG = "FlickrFetchr";
+    private static final String API_KEY = "9064993332fbc73e2a7588f7d74746fd";
+    private static final String FETCH_RECENTS_METHOD = "flickr.photos.getRecent";
+    private static final String SEARCH_METHOD = "flickr.photos.search";
+    private static final Uri ENDPOINT = Uri
+            .parse("https://api.flickr.com/services/rest/")
+            .buildUpon()
+            .appendQueryParameter("api_key", API_KEY)
+            .appendQueryParameter("format", "json")
+            .appendQueryParameter("nojsoncallback", "1")
+            .appendQueryParameter("extras", "url_s")
+            .build();
+
 
     private List<GalleryItem> mGalleryItems = new ArrayList<>();
 
@@ -61,18 +69,25 @@ public class FlickrFetchr {
         }
     }
 
-    public List<GalleryItem> fetchItems (int page){
+    public String getUrlString (String urlSpec) throws IOException{
+        return new String(getUrlBytes(urlSpec));
+    }
+
+
+    public List<GalleryItem> fetchRecentPhotos (int page){
+        String url = buildUrl (FETCH_RECENTS_METHOD, page, null);
+        return downloadGalleryItems(url);
+    }
+
+    public List<GalleryItem> searchPhotos (String query, int page){
+        String url = buildUrl(SEARCH_METHOD, page, query);
+        return downloadGalleryItems(url);
+    }
+
+
+    public List<GalleryItem> downloadGalleryItems (String url){
 
         try {
-            String url = Uri.parse("https://api.flickr.com/services/rest/")
-                    .buildUpon()
-                    .appendQueryParameter("method", "flickr.photos.getRecent")
-                    .appendQueryParameter("api_key", API_KEY)
-                    .appendQueryParameter("page",String.valueOf(page))
-                    .appendQueryParameter("format", "json")
-                    .appendQueryParameter("nojsoncallback", "1")
-                    .appendQueryParameter("extras", "url_s")
-                    .build().toString();
             String jsonString = getUrlString(url);
             Log.i(TAG, "Received JSON: " + jsonString);
             JSONObject jsonObject = new JSONObject(jsonString);
@@ -84,6 +99,18 @@ public class FlickrFetchr {
             e.printStackTrace();
         }
         return mGalleryItems;
+    }
+
+    private String buildUrl(String method, int page, String query){
+        Uri.Builder uriBuilder = ENDPOINT.buildUpon()
+                .appendQueryParameter("method", method)
+                .appendQueryParameter("page", String.valueOf(page));
+
+        if (method == SEARCH_METHOD) {
+            uriBuilder.appendQueryParameter("text", query);
+        }
+
+        return uriBuilder.build().toString();
     }
 
     private void parseGalleryItems (List<GalleryItem> items, JSONObject jsonObject) throws JSONException {
@@ -104,7 +131,5 @@ public class FlickrFetchr {
     }
 
 
-    public String getUrlString (String urlSpec) throws IOException{
-        return new String(getUrlBytes(urlSpec));
-    }
+
 }
