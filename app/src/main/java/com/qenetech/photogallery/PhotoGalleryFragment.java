@@ -184,7 +184,13 @@ public class PhotoGalleryFragment extends Fragment {
 
         @Override
         protected List<GalleryItem> doInBackground(Void... voids) {
-            return mFlickrFetchr.fetchItems(mGalleryPage);
+//            return mFlickrFetchr.fetchItems(mGalleryPage);
+            String query = "physics";
+            if (query == null) {
+                return mFlickrFetchr.fetchRecentPhotos(mGalleryPage);
+            } else {
+                return mFlickrFetchr.searchPhotos(query, mGalleryPage);
+            }
         }
 
         @Override
