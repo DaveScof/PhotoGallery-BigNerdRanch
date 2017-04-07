@@ -144,7 +144,7 @@ public class PhotoGalleryFragment extends Fragment {
 //            mImageView.setImageDrawable(drawable);
             Picasso.with(getActivity())
                     .load(item.getUrl())
-                    .placeholder(R.drawable.background_material_red)
+                    .placeholder(R.drawable.place_holder)
                     .into(mImageView);
         }
 
