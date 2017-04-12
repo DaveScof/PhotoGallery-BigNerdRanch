@@ -1,8 +1,5 @@
 package com.qenetech.photogallery;
 
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -44,7 +41,6 @@ public class PhotoGalleryFragment extends Fragment {
 
     private RecyclerView mPhotoRecyclerView;
     private int mGalleryPage;
-    private int lastPosition;
     private FlickrFetchr mFlickrFetchr = new FlickrFetchr();
     private boolean mIsLoading = false;
 
@@ -98,7 +94,6 @@ public class PhotoGalleryFragment extends Fragment {
                     int totalItemCount = manager.getItemCount();
                     int pastVisibleItems = manager.findFirstVisibleItemPosition();
                     if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
-                        lastPosition = manager.findLastVisibleItemPosition() - visibleItemCount + 2;
                         mGalleryPage++;
                         updateItems();
                     }
@@ -194,12 +189,12 @@ public class PhotoGalleryFragment extends Fragment {
 
         private ImageView mImageView;
 
-        public PhotoHolder(View itemView) {
+        PhotoHolder(View itemView) {
             super(itemView);
             mImageView = (ImageView) itemView.findViewById(R.id.fragment_photo_gallery_image_view);
         }
 
-        public void bindGalleryItem(GalleryItem item) {
+        void bindGalleryItem(GalleryItem item) {
 //            mImageView.setImageDrawable(drawable);
             Picasso.with(getActivity())
                     .load(item.getUrl())
@@ -213,7 +208,7 @@ public class PhotoGalleryFragment extends Fragment {
 
         private List<GalleryItem> mGalleryItems;
 
-        public PhotoAdapter (List<GalleryItem> galleryItems){
+        PhotoAdapter(List<GalleryItem> galleryItems){
             mGalleryItems = galleryItems;
         }
 
@@ -238,7 +233,7 @@ public class PhotoGalleryFragment extends Fragment {
             return mGalleryItems.size();
         }
 
-        public void setGalleryItems(List<GalleryItem> galleryItems) {
+        void setGalleryItems(List<GalleryItem> galleryItems) {
             mGalleryItems = galleryItems;
         }
     }
@@ -247,7 +242,7 @@ public class PhotoGalleryFragment extends Fragment {
 
         private String mQuery;
 
-        public FetchItemsTask(String query){
+        FetchItemsTask(String query){
             mQuery = query;
         }
 
