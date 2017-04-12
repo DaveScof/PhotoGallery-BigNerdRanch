@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -17,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import com.qenetech.photogallery.backend.FlickrFetchr;
 import com.qenetech.photogallery.backend.ThumbnailDownloader;
@@ -40,6 +42,8 @@ public class PhotoGalleryFragment extends Fragment {
     private List<GalleryItem> mItems = new ArrayList<>();
 
     private RecyclerView mPhotoRecyclerView;
+    private ProgressBar mProgressBar;
+
     private int mGalleryPage;
     private FlickrFetchr mFlickrFetchr = new FlickrFetchr();
     private boolean mIsLoading = false;
@@ -73,8 +77,9 @@ public class PhotoGalleryFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_photo_gallery, container, false);
 
-        mPhotoRecyclerView = (RecyclerView) view.findViewById(R.id.frag_photo_gallery_recyclerView);
+        mProgressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
 
+        mPhotoRecyclerView = (RecyclerView) view.findViewById(R.id.frag_photo_gallery_recyclerView);
 
         ViewTreeObserver observer = mPhotoRecyclerView.getViewTreeObserver();
         observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -249,6 +254,8 @@ public class PhotoGalleryFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             mIsLoading =  true;
+            if (mProgressBar != null)
+                mProgressBar.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -267,6 +274,8 @@ public class PhotoGalleryFragment extends Fragment {
             mItems = galleryItems;
             setupAdapter(3);
             mIsLoading =  false;
+            if (mProgressBar != null)
+                mProgressBar.setVisibility(View.GONE);
         }
     }
 }
