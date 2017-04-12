@@ -54,7 +54,7 @@ public class PhotoGalleryFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
+//        setRetainInstance(true);
         setHasOptionsMenu(true);
         updateItems();
 
@@ -78,9 +78,17 @@ public class PhotoGalleryFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_photo_gallery, container, false);
 
         mPhotoRecyclerView = (RecyclerView) view.findViewById(R.id.frag_photo_gallery_recyclerView);
-        mPhotoRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
+
 
         ViewTreeObserver observer = mPhotoRecyclerView.getViewTreeObserver();
+        observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                int recWidh = mPhotoRecyclerView.getWidth();
+                int columns = recWidh/480;
+                setupAdapter(columns);
+            }
+        });
         mPhotoRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -167,13 +175,14 @@ public class PhotoGalleryFragment extends Fragment {
         new FetchItemsTask(query).execute();
     }
 
-    private void setupAdapter(){
+    private void setupAdapter(int columns){
         if (isAdded())
         {
             if (mAdapter == null)
             {
                 mAdapter = new PhotoAdapter(mItems);
                 mPhotoRecyclerView.setAdapter(mAdapter);
+                mPhotoRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), columns));
             }
             else {
                 mAdapter.setGalleryItems(mItems);
@@ -261,7 +270,7 @@ public class PhotoGalleryFragment extends Fragment {
         @Override
         protected void onPostExecute(List<GalleryItem> galleryItems) {
             mItems = galleryItems;
-            setupAdapter();
+            setupAdapter(3);
             mIsLoading =  false;
         }
     }
