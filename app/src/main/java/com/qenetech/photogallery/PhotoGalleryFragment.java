@@ -1,11 +1,11 @@
 package com.qenetech.photogallery;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -24,6 +24,7 @@ import com.qenetech.photogallery.backend.FlickrFetchr;
 import com.qenetech.photogallery.backend.ThumbnailDownloader;
 import com.qenetech.photogallery.db.QueryPreferences;
 import com.qenetech.photogallery.model.GalleryItem;
+import com.qenetech.photogallery.service.PollService;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -57,6 +58,9 @@ public class PhotoGalleryFragment extends Fragment {
 //        setRetainInstance(true);
         setHasOptionsMenu(true);
         updateItems();
+
+        Intent i  = PollService.newIntent(getActivity());
+        getActivity().startService(i);
 
         Handler responseHandler = new Handler();
         mThumbnailDownloader = new ThumbnailDownloader<>(responseHandler);
