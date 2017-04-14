@@ -10,15 +10,15 @@ import android.util.Log;
  * Created by davescof on 4/14/17.
  */
 
-public class PoleService extends IntentService {
-    private static final String TAG = "PoleService";
+public class PollService extends IntentService {
+    private static final String TAG = "PollService";
 
     public static Intent newIntent (Context context){
-        Intent intent = new Intent(context, PoleService.class);
+        Intent intent = new Intent(context, PollService.class);
         return intent;
     }
 
-    public PoleService() {
+    public PollService() {
         super(TAG);
     }
 
