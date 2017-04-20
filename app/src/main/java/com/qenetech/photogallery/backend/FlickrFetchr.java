@@ -129,7 +129,4 @@ public class FlickrFetchr {
             items.add(item);
         }
     }
-
-
-
 }
