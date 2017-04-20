@@ -138,7 +138,7 @@ public class PhotoGalleryFragment extends Fragment {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 Log.i(TAG, "Submitted Query " + query);
-                QueryPreferences.setStoredQuery(getActivity(),query);
+                QueryPreferences.setStoredQuery(getActivity(),query.trim());
                 mItems.clear();
                 mAdapter = null;
                 updateItems();
@@ -148,6 +148,9 @@ public class PhotoGalleryFragment extends Fragment {
             @Override
             public boolean onQueryTextChange(String newText) {
                 Log.i(TAG, "QueryTextChange: " + newText);
+                if (newText.trim().equals("")) {
+                    onQueryTextSubmit("");
+                }
                 return false;
             }
         });
@@ -253,6 +256,8 @@ public class PhotoGalleryFragment extends Fragment {
 
         FetchItemsTask(String query){
             mQuery = query;
+            if (query.equals(""))
+                mQuery = null;
         }
 
         @Override
