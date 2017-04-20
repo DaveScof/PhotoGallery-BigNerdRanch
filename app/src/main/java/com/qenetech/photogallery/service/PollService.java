@@ -1,9 +1,12 @@
 package com.qenetech.photogallery.service;
 
+import android.app.AlarmManager;
 import android.app.IntentService;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
+import android.os.SystemClock;
 import android.util.Log;
 
 import com.qenetech.photogallery.backend.FlickrFetchr;
@@ -18,6 +21,7 @@ import java.util.List;
 
 public class PollService extends IntentService {
     private static final String TAG = "PollService";
+    private static final int POLL_INTERVAL = 1000 * 60;
 
     public static Intent newIntent (Context context){
         Intent intent = new Intent(context, PollService.class);
@@ -25,8 +29,20 @@ public class PollService extends IntentService {
     }
 
     public static void setServiceAlarm (Context context, boolean isOn){
-        
+        Intent i = newIntent(context);
+        PendingIntent pi = PendingIntent.getService(context,0,i,0);
+
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(ALARM_SERVICE);
+        if (isOn) {
+            alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,
+                    SystemClock.elapsedRealtime(), POLL_INTERVAL, pi);
+        }
+        else {
+            alarmManager.cancel(pi);
+            pi.cancel();
+        }
     }
+
     public PollService() {
         super(TAG);
     }
