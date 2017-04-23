@@ -14,7 +14,7 @@ public class QueryPreferences {
 
     public static String getStoredQuery (Context context){
         return PreferenceManager.getDefaultSharedPreferences(context)
-                .getString(PREF_SEARCH_QUERY, null);
+                .getString(PREF_SEARCH_QUERY, "");
     }
 
     public static void setStoredQuery (Context context, String query){
@@ -24,8 +24,7 @@ public class QueryPreferences {
                 .apply();
     }
 
-    public static String getLastResultId (Context contex)
-    {
+    public static String getLastResultId (Context contex) {
         return PreferenceManager.getDefaultSharedPreferences(contex)
                 .getString(PREF_LAST_RESULT_ID, null);
     }

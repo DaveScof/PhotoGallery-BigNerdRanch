@@ -49,8 +49,10 @@ public class PollService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        if (!isNetworkAvailableAndConnected())
+        if (!isNetworkAvailableAndConnected()) {
+            Log.i(TAG, "Connection not available");
             return;
+        }
 
         String query = QueryPreferences.getStoredQuery(this);
         String lastResultId = QueryPreferences.getLastResultId(this);
@@ -63,8 +65,10 @@ public class PollService extends IntentService {
             itemList = new FlickrFetchr().searchPhotos(query, 0);
         }
 
-        if (itemList.size() == 0)
+        if (itemList.size() == 0) {
+            Log.i(TAG, "Gallery Items list is empty");
             return;
+        }
 
         String resultId = itemList.get(0).getId();
         if (resultId.equals(lastResultId))
