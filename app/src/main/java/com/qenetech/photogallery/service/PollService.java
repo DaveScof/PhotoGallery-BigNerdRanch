@@ -88,4 +88,12 @@ public class PollService extends IntentService {
 
         return isConnected;
     }
+
+    public boolean isAlarmServiceOn (Context context)
+    {
+        Intent i = PollService.newIntent(context);
+        PendingIntent pi = PendingIntent.getService(context, 0, i, PendingIntent.FLAG_NO_CREATE);
+
+        return pi != null;
+    }
 }
