@@ -2,13 +2,19 @@ package com.qenetech.photogallery.service;
 
 import android.app.AlarmManager;
 import android.app.IntentService;
+import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.os.SystemClock;
+import android.support.v4.app.NotificationManagerCompat;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
+import com.qenetech.photogallery.PhotoGalleryActivity;
+import com.qenetech.photogallery.R;
 import com.qenetech.photogallery.backend.FlickrFetchr;
 import com.qenetech.photogallery.db.QueryPreferences;
 import com.qenetech.photogallery.model.GalleryItem;
@@ -73,11 +79,27 @@ public class PollService extends IntentService {
         }
 
         String resultId = itemList.get(0).getId();
-        if (resultId.equals(lastResultId))
+        if (resultId.equals(lastResultId)) {
             Log.i(TAG, "Got an old result: " + resultId);
-        else
+        }
+        else {
             Log.i(TAG, "Got a new result: " + resultId);
+            Intent i = PhotoGalleryActivity.newIntent(this);
+            PendingIntent pi = PendingIntent.getActivity(this, 0, i, 0);
+            Resources resources = getResources();
 
+            Notification notification = new NotificationCompat.Builder(this)
+                    .setTicker(resources.getString(R.string.new_pictures_title))
+                    .setSmallIcon(android.R.drawable.ic_menu_report_image)
+                    .setContentTitle(resources.getString(R.string.new_pictures_title))
+                    .setContentText(resources.getString(R.string.new_pictures_text))
+                    .setContentIntent(pi)
+                    .setAutoCancel(true)
+                    .build();
+
+            NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
+            notificationManagerCompat.notify(0, notification);
+        }
         QueryPreferences.setLastResultId(this, resultId);
     }
 
