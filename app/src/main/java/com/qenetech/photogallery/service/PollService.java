@@ -34,10 +34,12 @@ public class PollService extends IntentService {
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(ALARM_SERVICE);
         if (isOn) {
+            Log.i(TAG, "Alarm set on PendingIntent " + pi + ". With a Poll Interval of " + POLL_INTERVAL);
             alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,
                     SystemClock.elapsedRealtime(), POLL_INTERVAL, pi);
         }
         else {
+            Log.i(TAG, "Alarm is canceled!");
             alarmManager.cancel(pi);
             pi.cancel();
         }
@@ -89,7 +91,7 @@ public class PollService extends IntentService {
         return isConnected;
     }
 
-    public boolean isAlarmServiceOn (Context context)
+    public static boolean isAlarmServiceOn (Context context)
     {
         Intent i = PollService.newIntent(context);
         PendingIntent pi = PendingIntent.getService(context, 0, i, PendingIntent.FLAG_NO_CREATE);
