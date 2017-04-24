@@ -1,7 +1,11 @@
 package com.qenetech.photogallery;
 
-import android.content.Intent;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
+import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -24,6 +28,7 @@ import com.qenetech.photogallery.backend.FlickrFetchr;
 import com.qenetech.photogallery.backend.ThumbnailDownloader;
 import com.qenetech.photogallery.db.QueryPreferences;
 import com.qenetech.photogallery.model.GalleryItem;
+import com.qenetech.photogallery.service.PollJobService;
 import com.qenetech.photogallery.service.PollService;
 import com.squareup.picasso.Picasso;
 
@@ -133,12 +138,35 @@ public class PhotoGalleryFragment extends Fragment {
 
         MenuItem toggleItem = menu.findItem(R.id.menu_item_toggle_poll);
 
-        if (PollService.isAlarmServiceOn(getActivity()))
-        {
-            toggleItem.setTitle(R.string.stop_polling);
-        } else {
-            toggleItem.setTitle(R.string.start_polling);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            final int JOB_ID = 1;
+
+            JobScheduler scheduler = (JobScheduler)
+                    getActivity().getSystemService(Context.JOB_SCHEDULER_SERVICE);
+
+            boolean hasBeenScheduled = false;
+            for (JobInfo jobInfo: scheduler.getAllPendingJobs()){
+                if (jobInfo.getId() == JOB_ID)
+                    hasBeenScheduled = true;
+            }
+
+            if (hasBeenScheduled)
+            {
+                toggleItem.setTitle(R.string.stop_polling);
+            } else {
+                toggleItem.setTitle(R.string.start_polling);
+            }
+
         }
+        else {
+            if (PollService.isAlarmServiceOn(getActivity()))
+            {
+                toggleItem.setTitle(R.string.stop_polling);
+            } else {
+                toggleItem.setTitle(R.string.start_polling);
+            }
+        }
+
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -179,9 +207,44 @@ public class PhotoGalleryFragment extends Fragment {
                 updateItems();
                 return true;
             case R.id.menu_item_toggle_poll:
-                boolean shouldStartAlarm = !PollService.isAlarmServiceOn(getActivity());
-                PollService.setServiceAlarm(getActivity(), shouldStartAlarm);
-                getActivity().invalidateOptionsMenu();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    Log.i(TAG, "SDK VERSION LOLLIPOP Detected. JobService Starting...");
+                    final int JOB_ID = 1;
+
+                    JobScheduler scheduler = (JobScheduler)
+                            getActivity().getSystemService(Context.JOB_SCHEDULER_SERVICE);
+
+                    boolean hasBeenScheduled = false;
+                    for (JobInfo jobInfo: scheduler.getAllPendingJobs()){
+                        if (jobInfo.getId() == JOB_ID)
+                            hasBeenScheduled = true;
+                    }
+
+                    if (!hasBeenScheduled)
+                    {
+                        JobInfo jobInfo = new JobInfo.Builder (
+                                JOB_ID, new ComponentName(getActivity(), PollJobService.class))
+                                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
+                                .setPeriodic(1000 * 60 * 1)
+                                .setPersisted(true)
+                                .build();
+                        scheduler.schedule(jobInfo);
+                        Log.i(TAG, "Job Service Scheduled");
+                        getActivity().invalidateOptionsMenu();
+                    }
+                    else {
+                        scheduler.cancel(JOB_ID);
+                        getActivity().invalidateOptionsMenu();
+                        Log.i(TAG, "Job Service stopped");
+                    }
+
+                } else  {
+                    boolean shouldStartAlarm = !PollService.isAlarmServiceOn(getActivity());
+                    PollService.setServiceAlarm(getActivity(), shouldStartAlarm);
+                    getActivity().invalidateOptionsMenu();
+                    Log.i(TAG, "Starting Poll Service on SDK VERSION < LOLLIPOP");
+                }
+
             default:
                 return super.onOptionsItemSelected(item);
         }

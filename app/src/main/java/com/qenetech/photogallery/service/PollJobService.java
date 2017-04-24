@@ -32,12 +32,7 @@ public class PollJobService extends JobService {
     private static final String TAG = "PollJobService";
 
     private Context mContext;
-    private AsyncTask mCurrentTask;
-
-    public PollJobService (Context context)
-    {
-        mContext = context;
-    }
+    private PollTask mCurrentTask;
 
     @Override
     public boolean onStartJob(JobParameters jobParameters) {
@@ -61,6 +56,7 @@ public class PollJobService extends JobService {
         protected Void doInBackground(JobParameters... params) {
             JobParameters parameters = params[0];
 
+            mContext = getApplication().getApplicationContext();
             String query = QueryPreferences.getStoredQuery(mContext);
             String lastResultId = QueryPreferences.getLastResultId(mContext);
 
@@ -83,6 +79,7 @@ public class PollJobService extends JobService {
                 Log.i(TAG, "Got an old result: " + resultId);
             }
             else {
+
                 Log.i(TAG, "Got a new result: " + resultId);
                 Intent i = PhotoGalleryActivity.newIntent(mContext);
                 PendingIntent pi = PendingIntent.getActivity(mContext, 0, i, 0);
@@ -105,5 +102,9 @@ public class PollJobService extends JobService {
             jobFinished(parameters, false);
             return null;
         }
+    }
+
+    public void setContext (Context context){
+        mContext = context;
     }
 }
