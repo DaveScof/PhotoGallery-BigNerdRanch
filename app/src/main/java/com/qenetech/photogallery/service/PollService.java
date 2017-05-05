@@ -31,6 +31,7 @@ public class PollService extends IntentService {
     private static final int POLL_INTERVAL = 1000 * 60;
     public static final String ACTION_SHOW_NOTIFICATION = "com.qenetech.photogallery.service.ACTION_SHOW_NOTIFICATION";
 
+    public static final String PERM_PRIVATE = "com.qenetech.photogallery.PRIVATE";
     public static Intent newIntent (Context context){
         Intent intent = new Intent(context, PollService.class);
         return intent;
@@ -104,7 +105,7 @@ public class PollService extends IntentService {
             NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
             notificationManagerCompat.notify(0, notification);
 
-            sendBroadcast(new Intent(ACTION_SHOW_NOTIFICATION));
+            sendBroadcast(new Intent(ACTION_SHOW_NOTIFICATION), PERM_PRIVATE);
         }
         QueryPreferences.setLastResultId(this, resultId);
     }
