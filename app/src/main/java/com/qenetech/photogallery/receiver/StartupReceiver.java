@@ -5,6 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.qenetech.photogallery.db.QueryPreferences;
+import com.qenetech.photogallery.service.PollService;
+
 /**
  * Created by davescof on 5/5/17.
  */
@@ -15,5 +18,7 @@ public class StartupReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.i(TAG, "Received Broadcast intent " + intent.getAction());
+        boolean isOn = QueryPreferences.isAlarmOn(context);
+        PollService.setServiceAlarm(context, isOn);
     }
 }
