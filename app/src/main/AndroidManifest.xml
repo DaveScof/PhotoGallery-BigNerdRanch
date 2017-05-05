@@ -30,6 +30,14 @@
             </intent-filter>
 
         </receiver>
+        <receiver android:name=".receiver.NotificationReceiver"/>
+        <receiver android:name=".receiver.NotificationReceiver"
+                  android:exported="false">
+            <intent-filter
+                android:priority="-999">
+                <action android:name="com.qenetech.photogallery.service.ACTION_SHOW_NOTIFICATION"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 
