@@ -22,6 +22,7 @@ import android.widget.ProgressBar;
 
 import com.qenetech.photogallery.backend.FlickrFetchr;
 import com.qenetech.photogallery.backend.ThumbnailDownloader;
+import com.qenetech.photogallery.base.VisibleFragment;
 import com.qenetech.photogallery.db.QueryPreferences;
 import com.qenetech.photogallery.model.GalleryItem;
 import com.qenetech.photogallery.service.PollService;
@@ -34,7 +35,7 @@ import java.util.List;
  * Created by davescof on 4/4/17.
  */
 
-public class PhotoGalleryFragment extends Fragment {
+public class PhotoGalleryFragment extends VisibleFragment {
     private static final String TAG = "PhotoGalleryFragment";
 
     public static PhotoGalleryFragment newInstance(){

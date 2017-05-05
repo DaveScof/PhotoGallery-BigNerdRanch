@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.net.ConnectivityManager;
+import android.os.ParcelUuid;
 import android.os.SystemClock;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.NotificationCompat;
@@ -28,6 +29,7 @@ import java.util.List;
 public class PollService extends IntentService {
     private static final String TAG = "PollService";
     private static final int POLL_INTERVAL = 1000 * 60;
+    public static final String ACTION_SHOW_NOTIFICATION = "com.qenetech.photogallery.service.ACTION_SHOW_NOTIFICATION";
 
     public static Intent newIntent (Context context){
         Intent intent = new Intent(context, PollService.class);
@@ -101,6 +103,8 @@ public class PollService extends IntentService {
 
             NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
             notificationManagerCompat.notify(0, notification);
+
+            sendBroadcast(new Intent(ACTION_SHOW_NOTIFICATION));
         }
         QueryPreferences.setLastResultId(this, resultId);
     }
