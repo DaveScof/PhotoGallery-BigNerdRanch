@@ -83,15 +83,15 @@ public class PhotoGalleryFragment extends VisibleFragment {
 
         mPhotoRecyclerView = (RecyclerView) view.findViewById(R.id.frag_photo_gallery_recyclerView);
 
-        ViewTreeObserver observer = mPhotoRecyclerView.getViewTreeObserver();
-        observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                int recWidh = mPhotoRecyclerView.getWidth();
-                int columns = recWidh/480;
-                setupAdapter(columns);
-            }
-        });
+//        ViewTreeObserver observer = mPhotoRecyclerView.getViewTreeObserver();
+//        observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+//            @Override
+//            public void onGlobalLayout() {
+//                int recWidh = mPhotoRecyclerView.getWidth();
+//                int columns = recWidh/480;
+//                setupAdapter(columns);
+//            }
+//        });
 
 //        mPhotoRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 //            @Override
