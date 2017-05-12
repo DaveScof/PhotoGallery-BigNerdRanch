@@ -4,4 +4,5 @@
            android:layout_width="match_parent"
            android:layout_height="120dp"
            android:layout_gravity="center"
+           android:descendantFocusability="blocksDescendants"
            android:scaleType="centerCrop"/>

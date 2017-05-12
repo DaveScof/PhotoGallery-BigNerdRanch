@@ -92,21 +92,22 @@ public class PhotoGalleryFragment extends VisibleFragment {
                 setupAdapter(columns);
             }
         });
-        mPhotoRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                if (dy > 0 && !mIsLoading) {
-                    GridLayoutManager manager = (GridLayoutManager) mPhotoRecyclerView.getLayoutManager();
-                    int visibleItemCount = manager.getChildCount();
-                    int totalItemCount = manager.getItemCount();
-                    int pastVisibleItems = manager.findFirstVisibleItemPosition();
-                    if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
-                        mGalleryPage++;
-                        updateItems();
-                    }
-                }
-            }
-        });
+
+//        mPhotoRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+//            @Override
+//            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+//                if (dy > 0 && !mIsLoading) {
+//                    GridLayoutManager manager = (GridLayoutManager) mPhotoRecyclerView.getLayoutManager();
+//                    int visibleItemCount = manager.getChildCount();
+//                    int totalItemCount = manager.getItemCount();
+//                    int pastVisibleItems = manager.findFirstVisibleItemPosition();
+//                    if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
+//                        mGalleryPage++;
+//                        updateItems();
+//                    }
+//                }
+//            }
+//        });
 
         return view;
     }
@@ -199,8 +200,8 @@ public class PhotoGalleryFragment extends VisibleFragment {
             if (mAdapter == null)
             {
                 mAdapter = new PhotoAdapter(mItems);
-                mPhotoRecyclerView.setAdapter(mAdapter);
                 mPhotoRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), columns));
+                mPhotoRecyclerView.setAdapter(mAdapter);
             }
             else {
                 mAdapter.setGalleryItems(mItems);
@@ -208,13 +209,15 @@ public class PhotoGalleryFragment extends VisibleFragment {
             }
         }
     }
-    private class PhotoHolder extends RecyclerView.ViewHolder {
+    private class PhotoHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         private ImageView mImageView;
+        private GalleryItem mGalleryItem;
 
         PhotoHolder(View itemView) {
             super(itemView);
             mImageView = (ImageView) itemView.findViewById(R.id.fragment_photo_gallery_image_view);
+            itemView.setOnClickListener(this);
         }
 
         void bindGalleryItem(GalleryItem item) {
@@ -223,8 +226,15 @@ public class PhotoGalleryFragment extends VisibleFragment {
                     .load(item.getUrl())
                     .placeholder(R.drawable.place_holder)
                     .into(mImageView);
+
+            mGalleryItem = item;
         }
 
+        @Override
+        public void onClick(View view) {
+            Intent i = new Intent(Intent.ACTION_VIEW, mGalleryItem.getPhotopageUri());
+            startActivity(i);
+        }
     }
 
     private class PhotoAdapter extends RecyclerView.Adapter<PhotoHolder> {
