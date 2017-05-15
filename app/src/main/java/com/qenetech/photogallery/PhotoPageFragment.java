@@ -1,5 +1,6 @@
 package com.qenetech.photogallery;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -7,7 +8,9 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import com.qenetech.photogallery.base.VisibleFragment;
 
@@ -36,13 +39,21 @@ public class PhotoPageFragment extends VisibleFragment {
         mUri = getArguments().getParcelable(ARG_URI);
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_photo_page, container, false);
-        
-        mWebView = (WebView) v.findViewById(R.id.frag_photo_page_webView);
 
+        mWebView = (WebView) v.findViewById(R.id.frag_photo_page_webView);
+        mWebView.getSettings().setJavaScriptEnabled(true);
+        mWebView.setWebViewClient(new WebViewClient(){
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                return false;
+            }
+        });
+        mWebView.loadUrl(mUri.toString());
         return v;
     }
 }
