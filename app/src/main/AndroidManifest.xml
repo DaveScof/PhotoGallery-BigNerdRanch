@@ -25,7 +25,8 @@
         </activity>
 
         <activity android:name=".PhotoPageActivity"
-            android:parentActivityName=".PhotoGalleryActivity"/>
+            android:parentActivityName=".PhotoGalleryActivity"
+            android:configChanges="keyboard|screenSize|orientation"/>
 
         <service android:name=".service.PollService"/>
         <receiver android:name=".receiver.StartupReceiver">
