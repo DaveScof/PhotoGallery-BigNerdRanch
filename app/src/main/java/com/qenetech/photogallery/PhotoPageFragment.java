@@ -6,9 +6,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
@@ -21,12 +23,15 @@ import com.qenetech.photogallery.base.VisibleFragment;
  * Created by davescof on 5/13/17.
  */
 
-public class PhotoPageFragment extends VisibleFragment {
+public class PhotoPageFragment extends VisibleFragment implements PhotoPageActivity.OnBackPressedListener{
+    private static final String TAG = PhotoPageFragment.class.getSimpleName();
     private static final String ARG_URI = "photo_page_uri";
 
     private Uri mUri;
     private WebView mWebView;
     private ProgressBar mProgressBar;
+
+
 
     public static PhotoPageFragment newInstance (Uri uri) {
         Bundle args = new Bundle();
@@ -70,6 +75,7 @@ public class PhotoPageFragment extends VisibleFragment {
             @Override
             public void onReceivedTitle(WebView view, String title) {
                 AppCompatActivity activity = (AppCompatActivity) getActivity();
+                if (activity != null)
                 activity.getSupportActionBar().setSubtitle(title);
             }
         });
@@ -82,5 +88,17 @@ public class PhotoPageFragment extends VisibleFragment {
 
         mWebView.loadUrl(mUri.toString());
         return v;
+    }
+
+    @Override
+    public boolean onBackPressed() {
+        if (mWebView.canGoBack()) {
+            mWebView.goBack();
+            return true;
+        }
+        else {
+            onDestroy();
+            return false;
+        }
     }
 }
